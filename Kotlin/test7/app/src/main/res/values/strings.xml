@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">test7</string>
+    <string name="request_permission">I need to use Camera</string>
+    <string name="permit">Permit</string>
+    <string name="no_permission">App can\'t work without permission</string>
+    <string name="calculate">Calculate</string>
+    <string name="downloading">Downloading</string>
+    <string name="uploading">Uploading</string>
+
+</resources>
