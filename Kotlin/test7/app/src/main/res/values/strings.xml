@@ -6,5 +6,9 @@
     <string name="calculate">Calculate</string>
     <string name="downloading">Downloading</string>
     <string name="uploading">Uploading</string>
+    <string name="result_text">ResultText</string>
+    <string name="reset">Reset</string>
+    <string name="start">Start</string>
+    <string name="results">Results</string>
 
 </resources>

@@ -1,4 +1,4 @@
-package com.example.test7
+package tw.edu.ntu.bime.toolmen.test7
 
 /*
  * Copyright 2017 The Android Open Source Project
@@ -252,6 +252,8 @@ class camera_fragment : Fragment(), View.OnClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<View>(R.id.camera_texture).setOnClickListener(this)
         view.findViewById<View>(R.id.camera_button).setOnClickListener(this)
+        view.findViewById<View>(R.id.camera_result_button).setOnClickListener(this)
+
         textureView =  view.findViewById(R.id.camera_texture)
     }
 
@@ -322,12 +324,18 @@ class camera_fragment : Fragment(), View.OnClickListener,
                 val map = characteristics.get(
                         CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP) ?: continue
 
-                // For still image captures, we use the largest available size.
-                Log.d(TAG, Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)).toString())
+                /*
+                // For still image captures, we use the largest available size
                 val largest = Collections.max(
                         Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
-                        CompareSizesByArea())
-                imageReader = ImageReader.newInstance(largest.width, largest.height,
+                        CompareSizesByArea())*/
+
+                val allsize = Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG))
+                Log.d(TAG, allsize.toString())
+                val want_size = Size(1280,720)
+                if (!allsize.contains(want_size))
+                    toast("Resoultion Error")
+                imageReader = ImageReader.newInstance(want_size.width, want_size.height,
                         ImageFormat.JPEG, /*maxImages*/ 2).apply {
                     setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
                 }
@@ -686,11 +694,17 @@ class camera_fragment : Fragment(), View.OnClickListener,
                     lockFocus()
             }
             R.id.camera_button -> {
-                (getFragmentManager() as FragmentManager).beginTransaction()
+                getFragmentManager()!!.beginTransaction()
                         .replace(R.id.base, result_one.newInstance())
                         .addToBackStack(null)
                         .commit()
                 toast("Send to Server")
+            }
+            R.id.camera_result_button -> {
+                getFragmentManager()!!.beginTransaction()
+                        .replace(R.id.base, result_all.newInstance())
+                        .addToBackStack(null)
+                        .commit()
             }
         }
     }

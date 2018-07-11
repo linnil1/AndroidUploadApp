@@ -1,4 +1,4 @@
-package com.example.test7
+package tw.edu.ntu.bime.toolmen.test6
 
 /*
 import android.Manifest
