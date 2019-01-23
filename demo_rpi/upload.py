@@ -3,8 +3,10 @@ import shutil
 import os
 
 
-url = 'http://192.168.0.1'
-download_url = url + '/images/'
+baseurl = 'http://192.168.1.2:443'
+url = baseurl
+# url = baseurl + '/batch'  # use batch
+download_url = baseurl + '/images/'
 save_path = 'images/'
 
 
