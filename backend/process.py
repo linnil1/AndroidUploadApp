@@ -74,16 +74,7 @@ def padImage(img_path):
     return input_img
 
 
-def run(path, name):
-    # Configure input
-    input_imgs = padImage(os.path.join(path, name))[None].type(Tensor)
-
-    # Get detections
-    with torch.no_grad():
-        detections = model(input_imgs)
-        detections = non_max_suppression(detections, 80, opt.conf_thres, opt.nms_thres)
-        detections = detections[0]
-
+def draw(detections, path, name):
     # Create plot
     img = np.array(Image.open(os.path.join(path, name)))
     plt.figure()
@@ -104,8 +95,8 @@ def run(path, name):
         bbox_colors = random.sample(colors, n_cls_preds)
         for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
 
-            print('\t+ Label: %s, Conf: %.5f' %
-                  (classes[int(cls_pred)], cls_conf.item()))
+            # print('\t+ Label: %s, Conf: %.5f' %
+            #       (classes[int(cls_pred)], cls_conf.item()))
 
             # Rescale coordinates to original dimensions
             box_h = ((y2 - y1) / unpad_h) * img.shape[0]
@@ -150,8 +141,44 @@ def run(path, name):
     fig.savefig(os.path.join(path, newname),
                 bbox_inches='tight', pad_inches=0.0)
     plt.close()
-    return str(len(detections)) + " results", newname
+    return "result text", newname
+
+
+def run(path, name):
+    # Configure input
+    # Get detections
+    # About 6.2fps
+    with torch.no_grad():
+        input_imgs = padImage(os.path.join(path, name))[None].type(Tensor)
+        detections = model(input_imgs)
+        detections = non_max_suppression(detections, 80, opt.conf_thres, opt.nms_thres)
+        text, newname = draw(detections[0], path, name)
+    return text, newname
+
+
+def runBatch(paths, names):
+    # Configure input
+    # Get detections
+    # I test the speed is about 6.3fps
+    with torch.no_grad():
+        images = [padImage(os.path.join(paths[i], names[i])) for i in range(len(names))]
+        input_imgs = torch.stack(images).type(Tensor)
+        detections = model(input_imgs)
+        detections = non_max_suppression(detections, 80, opt.conf_thres, opt.nms_thres)
+    results = [draw(detections[i], paths[i], names[i]) for i in range(len(names))]
+    texts = [r[0] for r in results]
+    newnames = [r[1] for r in results]
+    return texts, newnames
 
 
 if __name__ == '__main__':
-    run("images/", "1548228638.6999013.jpg")
+    # run("images/", "1548228638.6999013.jpg")
+    names = [
+        "1548254972.9842274.jpg",
+        "1548254979.2844467.jpg",
+        "1548255185.4277012.jpg",
+        "1548255185.489744.jpg"]
+    paths = ['./images'] * 4
+    a, b = runBatch(paths, names)
+    print(a)
+    print(b)
