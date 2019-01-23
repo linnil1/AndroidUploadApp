@@ -1,60 +1,60 @@
-from flask import Flask, render_template, send_from_directory, request, flash, jsonify
+from flask import Flask, send_from_directory, request, jsonify
 from flask_uploads import UploadSet, configure_uploads, IMAGES
-from flask_sqlalchemy import SQLAlchemy
 import time
 import os
 from process import run
 
+
 app = Flask(__name__)
-app.config['UPLOADED_PHOTOS_DEST'] = 'images'
-app.config['SECRET_KEY'] = 'secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.abspath('.') + '/test.db'
-db = SQLAlchemy(app)
+image_path = 'images/'
+app.config['SECRET_KEY'] = 'secret'  # need change!!
+app.config['UPLOADED_PHOTOS_DEST'] = image_path
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, (photos))
 
+
+# use static path to server images
 @app.route('/images/<path:path>')
 def getImage(path):
-    return send_from_directory('images', path)
+    rep = send_from_directory(image_path, path)
+    os.remove(os.path.join(image_path, path))
+    return rep
 
-class Result(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    text   = db.Column(db.String(100), nullable=False)
-    # i'm not sure the limit of path length
-    oriimg = db.Column(db.String(100), unique=True, nullable=False)
-    resimg = db.Column(db.String(100), unique=True, nullable=False)
-
-    def __repr__(self):
-        return '<Result ID%r>' % id
 
 @app.route("/", methods=['GET', 'POST'])
 def main():
+    """
+    Detect objects in image.
+    Only POST will work.
+
+    Parameters
+    ----------
+    photo: binary
+        Binary image data.
+
+    Returns
+    -------
+    json
+        result is result of text.
+        resimg is result id of image, you can get the image data from
+        https://your_url:443/images/id
+    """
     if request.method == 'POST':
-        needjson = False
-        try:
-            needjson = request.form['json'] != 'false'
-            filename = photos.save(request.files['photo'],
-                           name='{}.'.format(time.time()))
-        except:
-            return 'The upload was not allowed'
+        # read image
+        filename = photos.save(request.files['photo'],
+                               name='{}.'.format(time.time()))
 
-        print(filename)
+        # run and result
+        print("Process", filename)
         text, resimg = run('./images/', filename)
-        db.session.add(Result(text=text, oriimg=filename, resimg=resimg))
-        db.session.commit()
-        if needjson:
-            return jsonify({'text': text,
-                            'resimg': '/images/' + resimg,
-                            'oriimg': '/images/' + filename})
+        os.remove('./images/' + filename)
 
-    results = Result.query.all()
-    results.reverse()
-    return render_template('result.html', results=results)
+        return jsonify({'result': text,
+                        'resimg': resimg})
 
-def init():
-    db.create_all()
+    return jsonify({'result': 'Error! Not Implement'})
 
-# if you first time use it
-# python3 -c 'import app;app.init()'
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')
