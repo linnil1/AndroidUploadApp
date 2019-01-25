@@ -75,18 +75,16 @@ def padImage(img_path):
 
 
 def run(path, name):
-    # Configure input
-    input_imgs = padImage(os.path.join(path, name))[None].type(Tensor)
-
     # Get detections
     with torch.no_grad():
+        input_imgs = padImage(os.path.join(path, name))[None].type(Tensor)
         detections = model(input_imgs)
         detections = non_max_suppression(detections, 80, opt.conf_thres, opt.nms_thres)
-        detections = detections[0]
+        detections = detections[0].cpu()
+        input_imgs = None
 
     # Create plot
     img = np.array(Image.open(os.path.join(path, name)))
-    plt.figure()
     fig, ax = plt.subplots(1)
     ax.imshow(img)
 
@@ -99,13 +97,13 @@ def run(path, name):
 
     # Draw bounding boxes and labels of detections
     if detections is not None:
-        unique_labels = detections[:, -1].cpu().unique()
+        unique_labels = detections[:, -1].unique()
         n_cls_preds = len(unique_labels)
         bbox_colors = random.sample(colors, n_cls_preds)
         for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
 
-            print('\t+ Label: %s, Conf: %.5f' %
-                  (classes[int(cls_pred)], cls_conf.item()))
+            # print('\t+ Label: %s, Conf: %.5f' %
+            #       (classes[int(cls_pred)], cls_conf.item()))
 
             # Rescale coordinates to original dimensions
             box_h = ((y2 - y1) / unpad_h) * img.shape[0]

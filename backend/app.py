@@ -3,6 +3,7 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 import time
 import os
 from process import run
+import torch
 
 
 app = Flask(__name__)
@@ -21,7 +22,7 @@ def getImage(path):
     return rep
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/", methods=['POST'])
 def main():
     """
     Detect objects in image.
@@ -39,20 +40,18 @@ def main():
         resimg is result id of image, you can get the image data from
         https://your_url:443/images/id
     """
-    if request.method == 'POST':
-        # read image
-        filename = photos.save(request.files['photo'],
-                               name='{}.'.format(time.time()))
+    # read image
+    filename = photos.save(request.files['photo'],
+                           name='{}.'.format(time.time()))
 
-        # run and result
-        print("Process", filename)
-        text, resimg = run('./images/', filename)
-        os.remove('./images/' + filename)
+    # run and result
+    print("Process", filename)
+    torch.cuda.empty_cache()
+    text, resimg = run('./images/', filename)
+    os.remove('./images/' + filename)
 
-        return jsonify({'result': text,
-                        'resimg': resimg})
-
-    return jsonify({'result': 'Error! Not Implement'})
+    return jsonify({'result': text,
+                    'resimg': resimg})
 
 
 if __name__ == '__main__':
