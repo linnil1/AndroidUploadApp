@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">demo_android</string>
+    <string name="show_results">Show Results</string>
+    <string name="reset">Reset</string>
+    <string name="start">Start</string>
+    <string name="calculate">Calculate</string>
+</resources>
