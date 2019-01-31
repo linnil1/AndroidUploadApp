@@ -4,4 +4,6 @@
     <string name="reset">Reset</string>
     <string name="start">Start</string>
     <string name="calculate">Calculate</string>
+    <string name="waiting">Waiting</string>
+    <string name="uploading">Uploading</string>
 </resources>

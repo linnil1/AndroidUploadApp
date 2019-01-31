@@ -13,7 +13,7 @@
             app:srcCompat="@android:color/darker_gray" android:contentDescription="Result image received from server"/>
 
     <ProgressBar
-        android:id="@+id/progressBar1"
+        android:id="@+id/progress_one"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"

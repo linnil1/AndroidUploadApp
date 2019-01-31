@@ -5,12 +5,15 @@ import android.support.test.runner.AndroidJUnit4
 import android.util.Log
 import com.bumptech.glide.Glide
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.FileDataPart
+import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.fuel.json.responseJson
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
+import java.io.File
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -32,7 +35,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testGlide() {
         Glide.with(InstrumentationRegistry.getTargetContext())
-             .load("https://ffp4g1ylyit3jdyti1hqcvtb-wpengine.netdna-ssl.com/firefox/files/2017/12/firefox-logo-300x310.png")
+             .load("$url/images/firefox.png")
     }
 
     @Test
@@ -45,15 +48,15 @@ class ExampleInstrumentedTest {
     fun testFuel() {
         Fuel.get("$url/json")
             .response { request, response, result ->
-                println(request)
-                println(response)
-                val (bytes, error) = result
-                println(error)
-                if (bytes != null) {
-                    println("[response bytes] ${String(bytes)}")
-                }
-                assert(bytes != null)
-                assert(result.toString() == "{'result': 123}")
+                // println(request)
+                // println(response)
+                result.fold(success = { res ->
+                    // println(String(res))
+                    assertEquals(String(res), "{\"result\":123}\n")
+                }, failure = { error ->
+                    // println(error)
+                    assertTrue(false)
+                })
             }
     }
 
@@ -62,10 +65,10 @@ class ExampleInstrumentedTest {
         Fuel.get("$url/json")
             .responseJson { _, _, result ->
                 result.fold(success = { json ->
-                    println("Success $json")
+                    // println("Success $json")
                 }, failure = { error ->
-                    println("Fail $error")
-                    assert(false)
+                    // println("Fail $error")
+                    assertTrue(false)
                 })
             }
     }
@@ -74,13 +77,13 @@ class ExampleInstrumentedTest {
     fun testFuelJsonError() {
         Fuel.get("$url/json123123123")
             .responseJson { request, response, result ->
-                println(request)
-                println(response)
+                // println(request)
+                // println(response)
                 result.fold(success = { json ->
-                    println("Success $json")
-                    assert(false)
+                    // println("Success $json")
+                    assertTrue(false)
                 }, failure = { error ->
-                    println("Fail $error")
+                    // println("Fail $error")
                 })
             }
     }
@@ -91,12 +94,74 @@ class ExampleInstrumentedTest {
             .responseJson { _, _, result ->
                 result.fold(success = { json ->
                     val jsonobj = json.obj()
-                    println("Json object status = ${jsonobj["status"]}")
-                    assertEquals(jsonobj["status"], 123)
+                    // println("Json object result = ${jsonobj["result"]}")
+                    assertEquals(jsonobj["result"], 123)
                 }, failure = { error ->
-                    println("Fail $error")
-                    assert(false)
+                    // println("Fail $error")
+                    assertTrue(false)
                 })
             }
+    }
+
+    @Test
+    fun testUpload() {
+        val appContext = InstrumentationRegistry.getTargetContext()
+        val outputDir = appContext.getCacheDir()
+        val filename = File.createTempFile("firefox",".png", outputDir)
+        val ( _, _, result) = Fuel.download("$url/images/firefox.png")
+                                  .fileDestination { _, _ -> filename }
+                                  .response()
+        result.fold(success = {},
+                    failure = { error ->
+                    // println(error)
+                    assertTrue(false)
+                    })
+
+        Fuel.upload("$url/", method=Method.POST)
+            .add(FileDataPart(filename, name="photo"))
+            .responseJson { _, _, resultjson ->
+                println("Uploaded")
+                resultjson.fold(success = { json ->
+                    val jsonobj = json.obj()
+                    println("Json object = $jsonobj")
+                    assertEquals(jsonobj["result"], "0 results")
+                    assertTrue(jsonobj["resimg"] is String)
+
+                }, failure = { error ->
+                    // println("Fail $error")
+                    assertTrue(false)
+                })
+            }
+    }
+
+    @Test
+    fun testProgress() {
+        println("Waiting test")
+        Fuel.get("$url/json")
+            .requestProgress { _, _ ->
+                println("Request wait")
+            }
+            .responseProgress{ _, _ ->
+                println("Response wait")
+            }
+            .responseJson{ _, _, result ->
+                println(result)
+                println("OK")
+            }
+    }
+
+    @Test
+    fun testAsync() {
+        println("Waiting test")
+        val (_, _, result) = Fuel.get("$url/json")
+                                 .responseJson()
+        result.fold(success = { json ->
+            val jsonobj = json.obj()
+            // println("Json object result = ${jsonobj["result"]}")
+            assertEquals(jsonobj["result"], 123)
+        }, failure = { error ->
+            // println("Fail $error")
+            assertTrue(false)
+        })
     }
 }
