@@ -1,6 +1,5 @@
 package tw.edu.ntu.bime.toolmen.demo_android
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.util.Log
@@ -44,13 +43,18 @@ class ResultOne : Fragment() {
                 result.fold(success = {
                     uploadAndShow(filename)
                 }, failure = { error ->
-                        Log.e("Image", error.toString())
-                    })
+                    Log.e("Image", error.toString())
+                })
             }
     }
 
     private fun uploadAndShow(filename: File) {
+        // set running
         Log.d("Server Start", "Start Uploading")
+        result_text.text = getString(R.string.waiting)
+        progress_one.visibility = View.VISIBLE
+
+        // upload
         Fuel.upload("$url/", method=Method.POST)
              .add(FileDataPart(filename, name="photo"))
              .responseJson { _, _, result ->
@@ -71,5 +75,6 @@ class ResultOne : Fragment() {
         Glide.with(this)
              .load(image_url)
              .into(result_img_view)
+        progress_one.visibility = View.GONE
     }
 }

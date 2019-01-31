@@ -57,7 +57,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@android:string/ok"
-                    style="?android:attr/buttonBarButtonStyle" android:textColor="@color/colorPrimaryDark"/>
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:textColor="@color/colorPrimaryDark"/>
         </LinearLayout>
     </LinearLayout>
 

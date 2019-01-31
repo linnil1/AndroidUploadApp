@@ -10,8 +10,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         savedInstanceState ?: supportFragmentManager.beginTransaction()
-            .replace(R.id.base, ResultOne())
+            .replace(R.id.base, CameraCapture())
             .commit()
-
     }
 }
