@@ -17,7 +17,6 @@ package tw.edu.ntu.bime.toolmen.demo_android
  */
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -332,7 +331,10 @@ class CameraCapture : Fragment(), View.OnClickListener,
                 val largest = Collections.max(
                     Arrays.asList(*map.getOutputSizes(ImageFormat.JPEG)),
                     CompareSizesByArea())
-                imageReader = ImageReader.newInstance(largest.width, largest.height,
+                // linnil1
+                // Set fix height and width by hardcode
+                // imageReader = ImageReader.newInstance(largest.width, largest.height,
+                imageReader = ImageReader.newInstance(480, 320,
                     ImageFormat.JPEG, /*maxImages*/ 2).apply {
                     setOnImageAvailableListener(onImageAvailableListener, backgroundHandler)
                 }
@@ -631,7 +633,6 @@ class CameraCapture : Fragment(), View.OnClickListener,
                 // For devices with orientation of 270, we need to rotate the JPEG 180 degrees.
                 set(CaptureRequest.JPEG_ORIENTATION,
                     (ORIENTATIONS.get(rotation) + sensorOrientation + 270) % 360)
-
                 // Use the same AE and AF modes as the preview.
                 set(CaptureRequest.CONTROL_AF_MODE,
                     CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE)
@@ -645,6 +646,12 @@ class CameraCapture : Fragment(), View.OnClickListener,
                     activity!!.showToast("Saved: $file")
                     Log.d(TAG, file.toString())
                     unlockFocus()
+
+                    // onclick calling
+                    // by linnil1
+                    fragmentManager!!.beginTransaction()
+                        .replace(R.id.base, ResultOne())
+                        .commit()
                 }
             }
 
@@ -678,11 +685,12 @@ class CameraCapture : Fragment(), View.OnClickListener,
         } catch (e: CameraAccessException) {
             Log.e(TAG, e.toString())
         }
-
     }
 
     override fun onClick(view: View) {
         when (view.id) {
+            // this function end up calling the function onCaptureCompleted
+            // which will redirect the fragment
             R.id.picture -> lockFocus()
         }
     }

@@ -16,7 +16,7 @@ import org.json.JSONObject
 import java.io.File
 
 
-class ResultOne : Fragment() {
+class ResultOne :Fragment(), View.OnClickListener {
     private val url = "http://192.168.1.2:5000"
 
     override fun onCreateView(
@@ -28,9 +28,26 @@ class ResultOne : Fragment() {
         return inflater.inflate(R.layout.result_one, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.findViewById<View>(R.id.return_button).setOnClickListener(this)
+    }
+
+    override fun onClick(view: View) {
+        when (view.id) {
+            R.id.return_button -> {
+                this.fragmentManager!!.beginTransaction()
+                    .replace(R.id.base, CameraCapture())
+                    .commit()
+            }
+        }
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        download()
+        // test
+        // download()
+        val file = File(activity!!.getExternalFilesDir(null), PIC_FILE_NAME)
+        uploadAndShow(file)
     }
 
     private fun download() {
@@ -66,7 +83,7 @@ class ResultOne : Fragment() {
                      show("$url/images/" + jsonobj!!["resimg"])
                  }, failure = { error ->
                      Log.e("Server Error", error.toString())
-                     result_text.text = "Server Error $error"
+                     result_text.text = getString(R.string.server_error) + error.toString()
                  })
              }
     }

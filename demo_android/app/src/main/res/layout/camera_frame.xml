@@ -34,7 +34,7 @@
 
         <Button
                 android:id="@+id/result_all_button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/show_results"
                 style="?android:attr/buttonBarButtonStyle"
@@ -43,7 +43,7 @@
 
         <Button
                 android:id="@+id/picture"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/picture"
                 style="?android:attr/buttonBarButtonStyle"

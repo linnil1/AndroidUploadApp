@@ -18,5 +18,8 @@
 
 package tw.edu.ntu.bime.toolmen.demo_android
 
+import android.support.v4.app.FragmentActivity
+import android.widget.Toast
+
 @JvmField val REQUEST_CAMERA_PERMISSION = 1
 @JvmField val PIC_FILE_NAME = "pic.jpg"

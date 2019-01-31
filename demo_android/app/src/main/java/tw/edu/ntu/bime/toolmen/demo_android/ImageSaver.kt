@@ -1,12 +1,14 @@
 package tw.edu.ntu.bime.toolmen.demo_android
 
+import android.graphics.BitmapFactory
 import android.media.Image
 import android.util.Log
-
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.nio.ByteBuffer
+import android.graphics.Bitmap
+import android.graphics.Matrix
+
 
 /**
  * Saves a JPEG [Image] into the specified [File].
@@ -43,6 +45,21 @@ internal class ImageSaver(
                     Log.e(TAG, e.toString())
                 }
             }
+        }
+
+        // rotate
+        // linnil1
+        try {
+            var bitmap = BitmapFactory.decodeFile(file.toString())
+            val matrix = Matrix()
+            matrix.postRotate(90f)
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            val out = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
+            out.close()
+        } catch (e: IOException) {
+            Log.e(TAG, e.toString())
         }
     }
 
