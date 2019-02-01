@@ -33,14 +33,13 @@
             style="?android:attr/buttonBarStyle">
 
         <Button
-                android:id="@+id/result_all_button"
+                android:id="@+id/go_results"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/show_results"
                 style="?android:attr/buttonBarButtonStyle"
                 android:layout_weight="1"
                 android:textColor="@color/colorPrimaryDark"/>
-
         <Button
                 android:id="@+id/picture"
                 android:layout_width="0dp"

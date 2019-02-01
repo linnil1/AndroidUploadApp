@@ -18,6 +18,7 @@ import java.io.File
 
 class ResultOne :Fragment(), View.OnClickListener {
     private val url = "http://192.168.1.2:5000"
+    private lateinit var tmpData :ResultData
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,12 +30,20 @@ class ResultOne :Fragment(), View.OnClickListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        view.findViewById<View>(R.id.return_button).setOnClickListener(this)
+        view.findViewById<View>(R.id.picture_ok).setOnClickListener(this)
+        view.findViewById<View>(R.id.cancel_result).setOnClickListener(this)
+
     }
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.return_button -> {
+            R.id.picture_ok -> {
+                result_datas.add(tmpData)
+                this.fragmentManager!!.beginTransaction()
+                    .replace(R.id.base, CameraCapture())
+                    .commit()
+            }
+            R.id.cancel_result -> {
                 this.fragmentManager!!.beginTransaction()
                     .replace(R.id.base, CameraCapture())
                     .commit()
@@ -79,8 +88,12 @@ class ResultOne :Fragment(), View.OnClickListener {
                  result.fold(success = { json ->
                      jsonobj = json.obj()
                      Log.d("Server Response", jsonobj.toString())
-                     result_text.text = jsonobj!!["result"].toString()
-                     show("$url/images/" + jsonobj!!["resimg"])
+                     val resText = jsonobj!!["result"].toString()
+                     val resImg = "$url/images/" + jsonobj!!["resimg"]
+                     result_text.text = resText
+                     show(resImg)
+                     tmpData = ResultData(resText, resImg)
+
                  }, failure = { error ->
                      Log.e("Server Error", error.toString())
                      result_text.text = getString(R.string.server_error) + error.toString()

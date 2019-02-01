@@ -16,4 +16,16 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)
     }
+
+    @Test
+    fun array() {
+        var a = ArrayList<Int>()
+        for (i in 0 until 10)
+            a.add(i)
+        for (i in 0 until 10)
+            assertEquals(a[i], i)
+        assertEquals(a.size, 10)
+        a.clear()
+        assertEquals(a.size, 0)
+    }
 }

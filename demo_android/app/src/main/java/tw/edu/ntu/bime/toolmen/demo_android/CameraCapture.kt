@@ -255,6 +255,7 @@ class CameraCapture : Fragment(), View.OnClickListener,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         view.findViewById<View>(R.id.picture).setOnClickListener(this)
+        view.findViewById<View>(R.id.go_results).setOnClickListener(this)
         textureView = view.findViewById(R.id.texture)
     }
 
@@ -692,6 +693,9 @@ class CameraCapture : Fragment(), View.OnClickListener,
             // this function end up calling the function onCaptureCompleted
             // which will redirect the fragment
             R.id.picture -> lockFocus()
+            R.id.go_results -> this.fragmentManager!!.beginTransaction()
+                .replace(R.id.base, Results())
+                .commit()
         }
     }
 

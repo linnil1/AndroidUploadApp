@@ -42,16 +42,15 @@
                 style="?android:attr/buttonBarStyle">
 
             <Button
-                    android:id="@+id/result_all_button"
+                    android:id="@+id/cancel_result"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/show_results"
+                    android:text="@string/no"
                     style="?android:attr/buttonBarButtonStyle"
+                    android:layout_weight="1"
                     android:textColor="@color/colorPrimaryDark"/>
-
             <Button
-                    android:id="@+id/return_button"
+                    android:id="@+id/picture_ok"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:id="@+id/card_recycle_view"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:layout_weight="0"
+            style="?android:attr/buttonBarStyle">
+
+        <Button
+                android:id="@+id/clear_results"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/clear"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_weight="1"
+                android:textColor="@color/colorPrimaryDark"/>
+        <Button
+                android:id="@+id/go_picture"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/take_picture"
+                style="?android:attr/buttonBarButtonStyle"
+                android:textColor="@color/colorPrimaryDark"/>
+    </LinearLayout>
+</LinearLayout>
