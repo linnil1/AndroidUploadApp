@@ -2,6 +2,8 @@
 
 Use Kotlin to write Android.
 
+Upload images to server, and store results.
+
 ## Demo Image
 
 Take Picture
@@ -15,3 +17,9 @@ Result of image
 Result of All
 
 ![](https://raw.githubusercontent.com/linnil1/AndroidUploadApp/master/demoImage/Screenshot_20180711-172238.png)
+
+
+## Some notes when I developing Android
+I'm newbie.
+
+https://hackmd.io/gbxP7NtLRXK1yATdbamBSA?both#

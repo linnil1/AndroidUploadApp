@@ -76,6 +76,7 @@ def padImage(img_path):
 
 def run(path, name):
     # Get detections
+    torch.cuda.empty_cache()
     with torch.no_grad():
         input_imgs = padImage(os.path.join(path, name))[None].type(Tensor)
         detections = model(input_imgs)

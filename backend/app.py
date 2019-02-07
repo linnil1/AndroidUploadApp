@@ -1,18 +1,17 @@
-from flask import Flask, send_from_directory, request, jsonify
+from flask import Flask, send_from_directory, request, jsonify, render_template
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 import time
 import os
-from process import run
-import torch
+from process_easy import run
 
 
 app = Flask(__name__)
 image_path = 'images/'
+os.makedirs(image_path, exist_ok=True)
 app.config['SECRET_KEY'] = 'secret'  # need change!!
 app.config['UPLOADED_PHOTOS_DEST'] = image_path
 photos = UploadSet('photos', IMAGES)
 configure_uploads(app, (photos))
-
 
 # use static path to server images
 @app.route('/images/<path:path>')
@@ -22,7 +21,7 @@ def getImage(path):
     return rep
 
 
-@app.route("/", methods=['POST'])
+@app.route("/", methods=['GET', 'POST'])
 def main():
     """
     Detect objects in image.
@@ -40,13 +39,15 @@ def main():
         resimg is result id of image, you can get the image data from
         https://your_url:443/images/id
     """
+    if request.method == 'GET':
+        return render_template('index.html')
+
     # read image
     filename = photos.save(request.files['photo'],
                            name='{}.'.format(time.time()))
 
     # run and result
     print("Process", filename)
-    torch.cuda.empty_cache()
     text, resimg = run('./images/', filename)
     os.remove('./images/' + filename)
 
@@ -56,4 +57,4 @@ def main():
 
 if __name__ == '__main__':
     # app.run(debug=True, host='0.0.0.0')
-    app.run(debug=False, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', ssl_context=('cert.pem', 'key.pem'))
