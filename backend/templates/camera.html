@@ -7,8 +7,9 @@
 <body>
 <div class="container flex-column">
     <div class="d-flex justify-content-center">
-        <video id="video" autoplay></video>
-        <canvas id="canvas" visible="false"></canvas>
+        <video id="video" autoplay hidden></video>
+        <canvas id="canvas"></canvas>
+        <canvas id="tmpcanvas" hidden></canvas>
     </div>
     <div class="d-flex justify-content-center">
         <div id="text" class="alert alert-success" role="alert"></div>
@@ -22,7 +23,7 @@
 </body>
 
 <style>
-#video, #canvas{
+#canvas{
     max-height: 80vh;
     max-width: 100vw;
 }

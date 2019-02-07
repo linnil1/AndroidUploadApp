@@ -1,13 +1,37 @@
 // Grab elements, create settings, etc.
 var video = document.getElementById('video');
 var canvas = document.getElementById('canvas');
+var tmpcanvas = document.getElementById('tmpcanvas');
 var context = canvas.getContext('2d');
-var text = document.getElementById('text')
-var texterror = document.getElementById('texterror')
+var tmpcontext = tmpcanvas.getContext('2d');
+var text = document.getElementById('text');
+var texterror = document.getElementById('texterror');
+
+// when status = true, start record
+var videoStatus = true
+// this three variable is for video
+var num = 0;
+var queueNum = []
+var queueResult = {}
+
+// mode
+// click -> caputre by clicking
+// vidoe -> all image are captured
+var mode = "click";
+// set fps
+const fps = 1 / 25;
+
+
+// Do not need tmp for clicking mode
+if (mode == "click") {
+    tmpcanvas = canvas;
+    tmpcontext = context;
+}
 
 
 // clean everything
-resultEnd()
+resultEnd();
+
 
 // start camera
 if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -18,24 +42,60 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 }
 
 
-// click the video
-video.addEventListener("click", function() {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
-    video.pause();
-    video.style.display = 'none';
-    canvas.style.display = 'block';
-    imageProcess(resultShow);
-});
+// capture image to canvas
+var instanceInterval = setInterval(() => {
+    if (!(mode == "click" && !videoStatus)) {
+        tmpcanvas.width = video.videoWidth;
+        tmpcanvas.height = video.videoHeight;
+        tmpcontext.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+    }
+    // When video mode, put all data into queue
+    if (mode == "video") {
+        // put into queue
+        queueNum.push(num);
+        var nowNum = num;
+        imageProcess(
+            (img, txt) => {
+                queueResult[nowNum] = [img,txt]
+            }, (txt) => {
+                queueResult[nowNum] = [txt]
+            }
+        )
+        num += 1;
+    }
+}, 1000 * fps);
 
-// click to start camera again
-canvas.addEventListener("click", resultEnd);
+
+// Clicking mode: click to start or stop
+if (mode == "click")
+    canvas.addEventListener("click", function() {
+        videoStatus = !videoStatus
+        if (!videoStatus)
+            imageProcess(resultShow, errorShow);
+        else
+            resultEnd()
+
+    });
+// Video mode: read result in the queue
+else
+    setInterval(() => {
+        if (queueResult[queueNum[0]]) {
+            var res = queueResult[queueNum[0]];
+            var nowNum = queueNum.shift();
+            console.log(res);
+            if (res.length > 1)
+                resultShow(res[0], res[1]);
+            delete queueResult[nowNum]
+        }
+    }, 100 * fps)
+
 
 // input: src of image, and pure text
 function resultShow(img, txt) {
     var image = new Image();
     image.onload = function() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
     };
     image.src = img;
@@ -43,15 +103,15 @@ function resultShow(img, txt) {
     text.textContent = txt;
 }
 
+
 function errorShow(txt) {
     texterror.hidden = null;
-    texterror.textContent = txt;;
+    texterror.textContent = txt;
 }
 
+
 function resultEnd() {
-    canvas.style.display = 'none';
-    video.style.display = 'block';
     text.hidden = true;
     texterror.hidden = true;
-    video.play();
+    // video.play();
 }

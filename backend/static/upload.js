@@ -1,22 +1,24 @@
 const url = "https://192.168.1.3:5000";
-const timeout = 1000;
+const timeout = 2000;
 
-var getImageUrl = (resimg) => url + "/images/" + resimg
+var getImageUrl = (resimg) => url + "/images/" + resimg;
 
-function imageProcess(resultShow) {
-    canvas.toBlob((blob) => {
+function imageProcess(func, errorfunc) {
+    tmpcanvas.toBlob((blob) => {
         // upload
+        if (blob == null) {
+            errorfunc("Not Init");
+            return
+        }
         httpGetAsync(blob, (rep) => {
             console.log(rep);
-            // image.src = "https://blog.mozilla.org/firefox/files/2017/12/firefox-logo-300x310.png"
-            resultShow(getImageUrl(rep.resimg), rep.result);
-        })
+            func(getImageUrl(rep.resimg), rep.result);
+        }, errorfunc);
     }, "image/jpeg");
 }
 
 
-function httpGetAsync(img, callback)
-{
+function httpGetAsync(img, callback, errorcallback) {
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.timeout = timeout;
     xmlHttp.onreadystatechange = function() {
@@ -25,10 +27,10 @@ function httpGetAsync(img, callback)
                 callback(JSON.parse(xmlHttp.responseText));
             // timeout error
             else if (xmlHttp.status == 0)
-                errorShow("TIMEOUT ERROR");
+                errorcallback("TIMEOUT ERROR");
             // server error
             else
-                errorShow(xmlHttp.statusText);
+                errorcallback(xmlHttp.statusText);
     }
     xmlHttp.open("POST", url, true); // true for asynchronous
     var form = new FormData();

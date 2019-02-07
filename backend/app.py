@@ -40,7 +40,7 @@ def main():
         https://your_url:443/images/id
     """
     if request.method == 'GET':
-        return render_template('index.html')
+        return render_template('camera.html')
 
     # read image
     filename = photos.save(request.files['photo'],
