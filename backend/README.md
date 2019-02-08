@@ -17,7 +17,6 @@ cd PyTorch-YOLOv3
 pip3 install -r requirements.txt
 cp ../app.py .
 cp ../process.py .
-mkdir images
 ```
 
 ## Run
@@ -26,7 +25,12 @@ Change key and somethings in `app.py`
 run `python3 app.py`
 
 ## Thanks
-* YOLO model powered by https://github.com/eriklindernoren/PyTorch-YOLOv3
-* https://gist.github.com/rozifus/c529caf170699f117c53
-* https://davidwalsh.name/convert-canvas-image
-* Bootstrap
+* backend
+    * YOLO model powered by https://github.com/eriklindernoren/PyTorch-YOLOv3
+
+* HTML CSS
+    * https://gist.github.com/rozifus/c529caf170699f117c53
+    * https://davidwalsh.name/convert-canvas-image
+    * Bootstrap
+    * Font awesome
+    * https://medium.com/@disjfa/animate-a-open-and-closing-element-using-bootstraps-collapse-79540f641a8e
