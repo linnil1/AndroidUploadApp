@@ -7,14 +7,14 @@ var tmpcontext = tmpcanvas.getContext('2d');
 var text = document.getElementById('text');
 var texterror = document.getElementById('texterror');
 var resultButton = document.getElementById('result_button');
-var historyDiv = document.getElementById('history')
+var historyDiv = document.getElementById('history');
 
 // when status = true, start record
-var videoStatus = true
+var videoStatus = true;
 // this three variable is for video
 var num = 0;
-var queueNum = []
-var queueResult = {}
+var queueNum = [];
+var queueResult = {};
 
 // mode
 // click -> caputre by clicking
@@ -162,6 +162,7 @@ function showCards() {
     historyDiv.innerHTML = "";
     var s = '<div class="card" style="width: 18rem;"> <img class="card-img-top" src="{0}" alt="Card image cap"> <div class="card-body"> <h5 class="card-title">{1}</h5> </div> </div>';
     var datas = JSON.parse(localStorage.getItem("arr"));
+    if (!datas) return;
     for (var i = 0; i < datas.length; ++i) {
         var inhtml = s.replace("{0}", datas[i][0])
                       .replace("{1}", datas[i][1]);

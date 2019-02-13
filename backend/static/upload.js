@@ -1,7 +1,7 @@
-const url = "https://192.168.1.3:5000";
+const url = window.location.href;
 const timeout = 2000;
 
-var getImageUrl = (resimg) => url + "/images/" + resimg;
+var getImageUrl = (resimg) => url + "images/" + resimg;
 
 function imageProcess(func, errorfunc) {
     tmpcanvas.toBlob((blob) => {
