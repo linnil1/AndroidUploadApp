@@ -1,9 +1,15 @@
-# demo on rpi
+# Demo on rpi
 
+## Custom
 Change url in `upload.py`
-and change sleep time in `stream.py`
 
-install packages
+Change sleep time in `stream.py`
+
+## install packages
 `pip3 install -r requirements`
 
-and run `python3 stream.py`
+## RUN
+`python3 stream.py`
+
+## Result
+![](https://raw.githubusercontent.com/linnil1/AndroidUploadApp/master/demoImage/rpi.png)

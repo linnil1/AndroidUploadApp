@@ -27,11 +27,29 @@ run `python3 app.py`
 
 `docker run -it --rm -p 5000:5000 -v $PWD:/app linnil1/yolo_deploy`
 
+
+## Frontend
+
+There are two modes for web: `click` and `video`.
+
+You can change it in `static/setupCamera.js`,
+also you can change `fps` or flip in it.
+
+
+## Result
+
+video mode
+![](https://raw.githubusercontent.com/linnil1/AndroidUploadApp/master/demoImage/web.png)
+
+click mode
+![](https://raw.githubusercontent.com/linnil1/AndroidUploadApp/master/demoImage/web1.png)
+
+
 ## Thanks
 * backend
     * YOLO model powered by https://github.com/eriklindernoren/PyTorch-YOLOv3
 
-* HTML CSS
+* HTML CSS JS
     * https://gist.github.com/rozifus/c529caf170699f117c53
     * https://davidwalsh.name/convert-canvas-image
     * Bootstrap
