@@ -19,9 +19,11 @@ var queueResult = {};
 // mode
 // click -> caputre by clicking
 // video -> all image are captured
-var mode = "click";
+var mode = "video";
+var patience = 3; // 3 seconds
+var flipHorizon = true;
 // set fps
-const fps = 1 / 25;
+const fps = 1 / 5;
 
 
 // Do not need tmp for clicking mode
@@ -50,21 +52,26 @@ var instanceInterval = setInterval(() => {
     if (!(mode == "click" && !videoStatus)) {
         tmpcanvas.width = video.videoWidth;
         tmpcanvas.height = video.videoHeight;
+        if (flipHorizon) {
+            tmpcontext.translate(video.videoWidth, 0);
+            tmpcontext.scale(-1, 1);
+        };
         tmpcontext.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
     }
     // When video mode, put all data into queue
     if (mode == "video") {
         // put into queue
+        if (queueNum.length > patience / fps) return;
         queueNum.push(num);
         var nowNum = num;
+        num += 1;
         imageProcess(
             (img, txt) => {
-                queueResult[nowNum] = [img,txt]
+                queueResult['a' + nowNum] = [img,txt];
             }, (txt) => {
-                queueResult[nowNum] = [txt]
+                queueResult['a' + nowNum] = [txt];
             }
-        )
-        num += 1;
+        );
     }
 }, 1000 * fps);
 
@@ -72,25 +79,36 @@ var instanceInterval = setInterval(() => {
 // Clicking mode: click to start or stop
 if (mode == "click")
     canvas.addEventListener("click", function() {
-        videoStatus = !videoStatus
+        videoStatus = !videoStatus;
         if (!videoStatus)
             imageProcess(resultShow, errorShow);
         else
-            resultEnd()
+            resultEnd();
 
     });
 // Video mode: read result in the queue
-else
+else {
     setInterval(() => {
-        if (queueResult[queueNum[0]]) {
-            var res = queueResult[queueNum[0]];
+        if (queueResult['a' + queueNum[0]]) {
+            var res = queueResult['a' + queueNum[0]];
             var nowNum = queueNum.shift();
             console.log(res);
+            resultEnd();
             if (res.length > 1)
                 resultShow(res[0], res[1]);
-            delete queueResult[nowNum]
+            else
+                errorShow(res[0]);
+            delete queueResult['a' + nowNum];
         }
-    }, 100 * fps)
+    }, 100 * fps);
+
+    // Bug: use reload to prevent out of memory problem
+    setTimeout(() => {
+        console.log("Reload");
+        window.location.reload(true);
+    // }, 500 * 1024 / (100 / fps) * 1000);
+    }, 60 * 1000);  // reload per minutes
+}
 
 
 // set interative mode for click mode
