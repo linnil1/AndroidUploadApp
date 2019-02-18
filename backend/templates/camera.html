@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <head>
     <meta charset="utf-8">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
@@ -10,7 +11,7 @@
 <body>
 <div class="container flex-column">
     <div class="d-flex justify-content-center">
-        <video id="video" autoplay hidden></video>
+        <video id="video" hidden autoplay playsinline></video>
         <canvas id="canvas"></canvas>
         <canvas id="tmpcanvas" hidden></canvas>
     </div>
@@ -26,12 +27,12 @@
 
 <hr>
 <div class="d-flex justify-content-center">
-    <a id="history_toggle" href="" data-toggle="collapse" data-target="#history_div" aria-expanded="true" aria-controls="historyHidden">
-        <i class="fa fa-chevron-down pull-right"></i>
-        History 
+    <a id="history_toggle" class="collapsed" href="" data-toggle="collapse" data-target="#history_div" aria-expanded="true" aria-controls="historyHidden">
+        <i class="fa fa-chevron-down"></i>
+        History
     </a>
 </div>
-<div id="history_div" class="collapse show">
+<div id="history_div" class="collapse">
     <button id="history_clear" type="button" class="btn btn-outline-danger">Clear</button>
     <div id="history" class="row"></div>
 </div>
@@ -52,10 +53,8 @@
 }
 
 .collapsed .fa {
-  transition: .3s transform ease-in-out;
+    transition: .3s transform ease-in-out;
+    transform: rotate(180deg);
 }
 
-.collapsed .fa {
-  transform: rotate(180deg);
-}
 </style>

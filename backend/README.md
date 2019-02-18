@@ -1,7 +1,7 @@
 # FLASK BACKEND
 This is a realtime flask server that using pytorch model to detect objects
 
-and a frontend web capture image by WebCam running on Browser.
+and a frontend web capture image by WebRTC Camera running on Browser.
 
 ## install
 `pip3 install -r requirements`
@@ -51,7 +51,9 @@ click mode
 
 * HTML CSS JS
     * https://gist.github.com/rozifus/c529caf170699f117c53
-    * https://davidwalsh.name/convert-canvas-image
+    * WEBRTC demo https://davidwalsh.name/convert-canvas-image
     * Bootstrap
     * Font awesome
-    * https://medium.com/@disjfa/animate-a-open-and-closing-element-using-bootstraps-collapse-79540f641a8e
+    * Collapse icon https://medium.com/@disjfa/animate-a-open-and-closing-element-using-bootstraps-collapse-79540f641a8e
+    * WEBRTC demo good https://webrtc.github.io/samples/src/content/getusermedia/gum/
+    * Play SVG http://bl.ocks.org/guilhermesimoes/fbe967d45ceeb350b765
