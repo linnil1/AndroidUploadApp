@@ -27,6 +27,44 @@
 
 <hr>
 <div class="d-flex justify-content-center">
+    <a id="setting_toggle" class="collapsed" href="" data-toggle="collapse" data-target="#setting_div" aria-expanded="true" aria-controls="settingHidden">
+        <i class="fa fa-chevron-down"></i>
+        Setting
+    </a>
+</div>
+<div id="setting_div" class="collapse">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text">Mode</label>
+        </div>
+        <select class="custom-select" id="mode">
+            <option value="click" selected>Click</option>
+            <option value="video">Video</option>
+        </select>
+
+        <div class="input-group-prepend">
+            <label class="input-group-text">FPS = 1/</label>
+        </div>
+        <input type="number" id="fps" class="form-control" placeholder="25" aria-label="fps" aria-describedby="basic-addon1">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text">Flip</label>
+            <div class="input-group-text">
+                <input type="checkbox" id='flip' aria-label="Checkbox for following text input">
+            </div>
+        </div>
+
+        <div class="input-group-prepend">
+            <label class="input-group-text">Camera</label>
+        </div>
+        <select class="custom-select" id="cameraid">
+        </select>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center">
     <a id="history_toggle" class="collapsed" href="" data-toggle="collapse" data-target="#history_div" aria-expanded="true" aria-controls="historyHidden">
         <i class="fa fa-chevron-down"></i>
         History

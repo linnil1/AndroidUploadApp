@@ -10,6 +10,7 @@ var text = document.getElementById("text");
 var texterror = document.getElementById("texterror");
 var resultButton = document.getElementById("result_button");
 var historyDiv = document.getElementById("history");
+var camera_choose = document.getElementById("cameraid");
 
 // when status = true, start record
 var videoStatus = false;
@@ -21,18 +22,22 @@ var queueResult = {};
 // mode
 // click -> caputre by clicking
 // video -> all image are captured
-var mode = "video";
+var mode = "click";
 var patience = 3; // 3 seconds
-var flipHorizon = true;
+var flipHorizon = false;
 // set fps
-const fps = 1 / 5;
+var fps = 1 / 25;
 
-
-// Do not need tmp for clicking mode
-if (mode == "click") {
-    tmpcanvas = canvas;
-    tmpcontext = context;
-}
+// Find camera
+navigator.mediaDevices.enumerateDevices().then(devices => {
+    devices = devices.filter(device => device.kind === "videoinput")
+    for (var i=0; i<devices.length; ++i) {
+        const option = document.createElement("option");
+        option.value = devices[i].deviceId;
+        option.text = devices[i].label || "camera " + i;
+        camera_choose.appendChild(option);
+    }
+}).catch(() => alert("Cannot Find Camera ID") );
 
 
 // clean everything
@@ -51,30 +56,60 @@ context.scale(10, 10);
 context.stroke(p);
 context.fill(p);
 
+
+// listen settings
+document.getElementById("flip").addEventListener("input", (evt) => {
+    flipHorizon = evt.target.checked;
+});
+
+camera_choose.addEventListener("input", () => {
+    video.srcObject.getTracks().forEach(track => track.stop());
+    enableCamera(() => {});
+});
+
+
 // Click to start
 canvas.addEventListener("click", function handler() {
+    enableCamera(init);
+    this.removeEventListener('click', handler);
+});
+
+
+function enableCamera(fun) {
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+        var constraints = {
+              facingMode: { exact: "environment" },
+              'video': {deviceId: camera_choose.value || undefined},
+        };
+        navigator.mediaDevices.getUserMedia(constraints).then(stream => {
             video.srcObject = stream;
             videoStatus = true;
-            console.log("Start");
-            this.removeEventListener('click', handler);
-            init();
+            fun();
             // video.play();
         })
         .catch(error => alert(error.name + ": " + error.message));
     }
     else
         alert("No Camera detected");
-});
+};
 
 
 // init
 function init() {
+    console.log("Init");
+    // setting
+    mode = document.getElementById("mode").value;
+    fps = 1 / parseFloat(document.getElementById("fps").value);
+
+    // Do not need tmp for clicking mode
+    if (mode == "click") {
+        tmpcanvas = canvas;
+        tmpcontext = context;
+    }
+
     // capture image to canvas
     setInterval(() => {
         if (!(mode == "click" && !videoStatus)) {
-            console.log("tmp");
             tmpcanvas.width = video.videoWidth;
             tmpcanvas.height = video.videoHeight;
             if (flipHorizon) {

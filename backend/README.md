@@ -55,5 +55,6 @@ click mode
     * Bootstrap
     * Font awesome
     * Collapse icon https://medium.com/@disjfa/animate-a-open-and-closing-element-using-bootstraps-collapse-79540f641a8e
-    * WEBRTC demo good https://webrtc.github.io/samples/src/content/getusermedia/gum/
+    * WEBRTC demo https://webrtc.github.io/samples/src/content/getusermedia/gum/
+    * WebRTC demo https://webrtc.github.io/samples/src/content/devices/input-output/
     * Play SVG http://bl.ocks.org/guilhermesimoes/fbe967d45ceeb350b765
