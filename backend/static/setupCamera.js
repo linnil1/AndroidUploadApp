@@ -27,6 +27,7 @@ var patience = 3; // 3 seconds
 var flipHorizon = false;
 // set fps
 var fps = 1 / 25;
+var no_hidden_video = false;
 
 // Find camera
 navigator.mediaDevices.enumerateDevices().then(devices => {
@@ -78,8 +79,7 @@ canvas.addEventListener("click", function handler() {
 function enableCamera(fun) {
     if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         var constraints = {
-              facingMode: { exact: "environment" },
-              'video': {deviceId: camera_choose.value || undefined},
+              'video': {deviceId: camera_choose.value ? {exact: camera_choose.value} : undefined},
         };
         navigator.mediaDevices.getUserMedia(constraints).then(stream => {
             video.srcObject = stream;
@@ -100,11 +100,17 @@ function init() {
     // setting
     mode = document.getElementById("mode").value;
     fps = 1 / parseFloat(document.getElementById("fps").value);
+    no_hidden_video = document.getElementById("no_hidden").checked;
 
     // Do not need tmp for clicking mode
     if (mode == "click") {
         tmpcanvas = canvas;
         tmpcontext = context;
+    }
+
+    if (no_hidden_video) {
+        video.hidden = null;
+        canvas.hidden = true;
     }
 
     // capture image to canvas
@@ -136,37 +142,36 @@ function init() {
     }, 1000 * fps);
 
 
-    // Clicking mode: click to start or stop
-    if (mode == "click")
-        canvas.addEventListener("click", function() {
-            videoStatus = !videoStatus;
-            if (!videoStatus)
-                imageProcess(resultShow, errorShow);
-            else
-                resultEnd();
-
-        });
-    // Video mode: read result in the queue
-    else {
-        setInterval(() => {
-            if (queueResult['a' + queueNum[0]]) {
-                var res = queueResult['a' + queueNum[0]];
-                var nowNum = queueNum.shift();
-                console.log(res);
-                resultEnd();
-                if (res.length > 1)
-                    resultShow(res[0], res[1]);
-                else
-                    errorShow(res[0]);
-                delete queueResult['a' + nowNum];
-            }
-        }, 100 * fps);
-    }
-
-
-    // set interative mode for click mode
+    // Clicking mode: wait for human to get image and check result
     if (mode == "click") {
-        // save to local storage
+        // click to toggle video
+        if (no_hidden_video) {
+            function toggle() {
+                videoStatus = !videoStatus;
+                if (!videoStatus) {
+                    video.hidden = true;
+                    canvas.hidden = null;
+                    imageProcess(resultShow, errorShow);
+                }
+                else {
+                    video.hidden = null;
+                    canvas.hidden = true;
+                    resultEnd();
+                }
+            };
+            video.addEventListener("click", toggle);
+            canvas.addEventListener("click", toggle);
+        }
+        else
+            canvas.addEventListener("click", () => {
+                videoStatus = !videoStatus;
+                if (!videoStatus)
+                    imageProcess(resultShow, errorShow);
+                else
+                    resultEnd();
+            });
+
+        // save to local storage if ok
         document.getElementById("button_ok").addEventListener("click", () => {
             var img = canvas.toDataURL("image/jpeg");
             var txt = text.textContent;
@@ -187,13 +192,30 @@ function init() {
             localStorage.setItem("arr", JSON.stringify([]));
         });
     }
+
+    // Video mode: read result in the queue
+    else {
+        setInterval(() => {
+            if (queueResult['a' + queueNum[0]]) {
+                var res = queueResult['a' + queueNum[0]];
+                var nowNum = queueNum.shift();
+                console.log(res);
+                resultEnd();
+                if (res.length > 1)
+                    resultShow(res[0], res[1]);
+                else
+                    errorShow(res[0]);
+                delete queueResult['a' + nowNum];
+            }
+        }, 100 * fps);
+    }
 }
 
 
 // input: src of image, and pure text
 function resultShow(img, txt) {
     var image = new Image();
-    image.onload = function() {
+    image.onload = () => {
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
