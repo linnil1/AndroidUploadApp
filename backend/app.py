@@ -3,6 +3,8 @@ from flask_uploads import UploadSet, configure_uploads, IMAGES
 import time
 import os
 from process_easy import run
+from flask_socketio import SocketIO
+import json
 
 
 app = Flask(__name__)
@@ -12,6 +14,7 @@ app.config["SECRET_KEY"] = "secret"  # need change!!
 app.config["UPLOADED_PHOTOS_DEST"] = image_path
 photos = UploadSet("photos", IMAGES)
 configure_uploads(app, (photos))
+sock = SocketIO(app)
 
 
 # use static path to server images
@@ -22,11 +25,15 @@ def getImage(path):
     return rep
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def main():
+    return render_template("camera.html")
+
+
+@app.route("/upload", methods=["POST"])
+def upload():
     """
-    Detect objects in image.
-    Only POST will work.
+    Upload by POST
 
     Parameters
     ----------
@@ -40,23 +47,54 @@ def main():
         resimg is result id of image, you can get the image data from
         https://your_url:443/images/id
     """
-    if request.method == "GET":
-        return render_template("camera.html")
 
-    # read image
+    # read image and save
     filename = photos.save(request.files["photo"],
                            name="{}.".format(time.time()))
 
-    # run and result
-    print("Process", filename)
-    text, resimg = run("./images/", filename)
-    os.remove("./images/" + filename)
+    # process
+    text, resimg = get_process(filename)
 
+    # return
     return jsonify({"result": text,
                     "resimg": resimg})
 
 
+@sock.on("upload")
+def sockUpload(req):
+    """
+    Upload images by web socket io
+    Same parameters and returns as above
+    """
+    # read image and save
+    filename = "{}.jpg".format(time.time())
+    new_file = open("./images/" + filename, "wb")
+    new_file.write(req["photo"])
+    new_file.close()
+
+    # process
+    text, resimg = get_process(filename)
+
+    # return
+    return json.dumps({"result": text,
+                       "resimg": resimg})
+
+
+# run and result
+def get_process(filename):
+    print("Process", filename)
+    text, resimg = run("./images/", filename)
+    os.remove("./images/" + filename)
+    return text, resimg
+
+
 if __name__ == "__main__":
+    """
+    You can uncomment one of below for testing
+    """
+    # sock.run(app, debug=True, host="0.0.0.0")
+    sock.run(app, debug=True, host="0.0.0.0",
+             certfile="cert.pem", keyfile="privkey.pem")
     # app.run(debug=True, host="0.0.0.0")
-    app.run(debug=True, host="0.0.0.0",
-            ssl_context=("cert.pem", "privkey.pem"))
+    # app.run(debug=True, host="0.0.0.0",
+    #         ssl_context=("cert.pem", "privkey.pem"))

@@ -3,3 +3,4 @@ flask-uploads
 flask-sqlalchemy
 pillow
 matplotlib
+flask-socketio
